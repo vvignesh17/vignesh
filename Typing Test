@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <title>Type Speed</title>
+        <script type="text/javascript" src="js/jquery-1.2.6.js"></script>
+        <style type="text/css">
+            form {
+                margin: 20px auto;
+                width: 500px;
+            }
+
+            #textariffic {
+                width: 400px;
+                height: 400px;
+                font-size: 12px;
+                font-family: monospace;
+                line-height: 15px;
+            }
+        </style>
+ <script type="text/javascript">
+            $(function() {
+                $('textarea')
+                    .keyup(checkSpeed);
+            });
+
+            var iLastTime = 0;
+            var iTime = 0;
+            var iTotal = 0;
+            var iKeys = 0;
+
+            function checkSpeed() {
+                iTime = new Date().getTime();
+
+                if (iLastTime != 0) {
+                    iKeys++;
+iTotal += iTime - iLastTime;
+                    iWords = $('textarea').val().split(/\s/).length;
+                    $('#CPM').html(Math.round(iKeys / iTotal * 6000, 2));
+                    $('#WPM').html(Math.round(iWords / iTotal * 6000, 2));
+                }
+
+                iLastTime = iTime;
+            }
+
+        </script>
+    </head>
+    <body>
+        <form id="tipper">
+            <textarea id="textariffic"></textarea>
+            <p>
+                <span class="label">CPM</span>
+                <span id="CPM">0</span>
+            </p>
+            <p>
+                <span class="label">WPM</span>
+                <span id="WPM">0</span>
+ </p>
+        </form>
+    </body>
+</html>
