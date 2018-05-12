@@ -1,63 +1,591 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
     <head>
-     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-        <title>Type Speed</title>
-        <script type="text/javascript" src="js/jquery-1.2.6.js"></script>
-        <style type="text/css">
-            form {
-                margin: 20px auto;
-                width: 500px;
-            }
-
-            #textariffic {
-                width: 400px;
-                height: 400px;
-                font-size: 12px;
-                font-family: monospace;
-                line-height: 15px;
-            }
-        </style>
- <script type="text/javascript">
-            $(function() {
-                $('textarea')
-                    .keyup(checkSpeed);
-            });
-
-            var iLastTime = 0;
-            var iTime = 0;
-            var iTotal = 0;
-            var iKeys = 0;
-
-            function checkSpeed() {
-                iTime = new Date().getTime();
-
-                if (iLastTime != 0) {
-                    iKeys++;
-iTotal += iTime - iLastTime;
-                    iWords = $('textarea').val().split(/\s/).length;
-                    $('#CPM').html(Math.round(iKeys / iTotal * 6000, 2));
-                    $('#WPM').html(Math.round(iWords / iTotal * 6000, 2));
-                }
-
-                iLastTime = iTime;
-            }
-
-        </script>
+        <title>Typing Speed</title>
     </head>
     <body>
-        <form id="tipper">
-            <textarea id="textariffic"></textarea>
-            <p>
-                <span class="label">CPM</span>
-                <span id="CPM">0</span>
-            </p>
-            <p>
-                <span class="label">WPM</span>
-                <span id="WPM">0</span>
- </p>
-        </form>
+             
+
+        <script>
+        start();
+            //holds the language of the typing (the default is english)
+var lang = "english";
+//holds all the records to all the languages with the respective language and its record
+var records = [
+    ["english",0],
+    
+];
+//called when the web application starts
+function start()
+{
+    startMenu();
+}
+//shows the start menu
+function startMenu()
+{
+    //creates the main container of this menu
+    var container = createContainer("0%","0%","100%","100%","startMenu");
+    document.body.appendChild(container);
+    
+    //creates the main title
+    var title = document.createElement("h1");
+    container.appendChild(title);
+    
+    //sets all the elements inside the container to align to the center
+    container.style.textAlign = "center";
+    //sets the main title of the page
+    title.appendChild(document.createTextNode("TYPING SPEED"));
+    //sets the color of the text
+    title.style.color = "#02C902";
+    //sets the position of the title
+    title.style.marginTop = "30%";
+    //sets the weight of the font
+    title.style.fontWeight = "1000";
+    
+    //creates the start button
+    var startButton = createButton("auto","auto","40%","10%","START");
+    //sets the size of the text inside the button
+    startButton.style.fontSize = "20px";
+    //when the button is clicked
+    startButton.addEventListener('click',function(){
+        //remove this menu
+        document.body.removeChild(document.getElementById("startMenu"));
+        //loads the language menu
+        languageMenu();
+    });
+    //append to the main container the button
+    container.appendChild(startButton);
+}
+//shows the language menu
+function languageMenu()
+{
+    //creates the main container of this menu
+    var container = createContainer("0%","0%","100%","100%","languageMenu");
+    document.body.appendChild(container);
+    
+    //align all the text to the center
+    container.style.textAlign = "center";
+    
+    //creates the main title
+    var title = document.createElement("h1");
+    container.appendChild(title);
+    
+    //sets the main title of the page
+    title.appendChild(document.createTextNode("English Is  Your Typing Language"));
+    //sets the color of the text
+    title.style.color = "#02C902";
+    //sets the position of the title
+    title.style.marginTop = "10%";
+    //set the font size
+    title.style.fontSize = "100%";
+    //sets the weight of the font
+    title.style.fontWeight = "1000";
+    
+    //create the england flag
+    var english = createImage("20%","30%","15%","15%",0,container,false);
+    container.appendChild(english);
+    
+}
+//shows the typing menu
+function typingMenu()
+{
+    //hols the app state
+    var isPlaying = false;
+    
+    //creates the main container of this menu
+    var container = createContainer("0%","0%","100%","100%","typingMenu");
+    document.body.appendChild(container);
+    //aligns all the elements inside this container to the center
+    container.style.textAlign = "center";
+    
+    //creates the current word container and put it inside the main container
+    var currentWordContainer = document.createElement("div");
+    container.appendChild(currentWordContainer);
+    //sets the dimension of the current word container
+    currentWordContainer.style.width = "50%";
+    currentWordContainer.style.height = "12%";
+    //sets the postion of the current word container 
+    currentWordContainer.style.margin = "0 auto 5% auto";
+    currentWordContainer.style.backgroundColor = "#DFDFDF";
+    currentWordContainer.style.color = "#02C902";
+    currentWordContainer.style.fontSize = Math.ceil((26*parseFloat(currentWordContainer.style.height))/16)+"px";
+    //align all the words inside this container to the center
+    currentWordContainer.style.textAlign = "center";
+    
+    //creates the previous word container and put it inside the main container
+    var previousWordContainer = document.createElement("div");
+    container.appendChild(previousWordContainer);
+    //sets the dimension of the word container
+    previousWordContainer.style.width = "25%";
+    previousWordContainer.style.height = "10%";
+    //sets the postion of the word container 
+    previousWordContainer.style.position = "absolute";
+    previousWordContainer.style.top = "0px";
+    previousWordContainer.style.left = "0px";
+    previousWordContainer.style.backgroundColor = "#DFDFDF";
+    previousWordContainer.style.color = "#C90202";
+    previousWordContainer.style.fontSize = "85%";
+    //align all the words inside this container to the center
+    previousWordContainer.style.textAlign = "center";
+    
+    //creates the previous word container and put it inside the main container
+    var nextWordContainer = document.createElement("div");
+    container.appendChild(nextWordContainer);
+    //sets the dimension of the word container
+    nextWordContainer.style.width = "25%";
+    nextWordContainer.style.height = "10%";
+    //sets the postion of the word container 
+    nextWordContainer.style.position = "absolute";
+    nextWordContainer.style.top = "0px";
+    nextWordContainer.style.left = "75%";
+    nextWordContainer.style.backgroundColor = "#DFDFDF";
+    nextWordContainer.style.color = "#787878";
+    nextWordContainer.style.fontSize = "85%";
+    //align all the words inside this container to the center
+    nextWordContainer.style.textAlign = "center";
+  
+    //assigns to the current word and next word variables a random word
+    var currentWord = randomWord(lang);
+    var nextWord = randomWord(lang);
+    //updates the respective text
+    currentWordContainer.innerHTML = currentWord;
+    nextWordContainer.innerHTML = nextWord;
+    
+    //initializes the cpm counter to 0
+    var cpm = 0;
+    
+    //creates the typing field
+    var typer = document.createElement("input");
+    container.appendChild(typer);
+    typer.style.textAlign = "center";
+    typer.style.color = "#02C902";
+    typer.style.fontWeight = "bold";
+    typer.style.fontSize = "20px";
+    
+    //enter a key text
+    var enterKeyText = document.createElement("h1");
+    container.appendChild(enterKeyText);
+    enterKeyText.style.color = "#02C902";
+    enterKeyText.style.fontSize = "80%";
+    enterKeyText.innerHTML = 'Enter the first word to start the timer';
+
+    //creates the cpm counter display text
+    var cpmCounter = document.createElement("h1");
+    container.appendChild(cpmCounter);
+    cpmCounter.style.color = "#02C902";
+    cpmCounter.style.fontSize = "100%";
+    cpmCounter.innerHTML = 'CPM: '+cpm;
+    
+    //add to the body the event of the enter key being presse
+    document.body.addEventListener('keyup',function(e){
+        //if the Enter key was pressed
+        if(e.keyCode == 13 || e.keyCode == 32)
+        {
+                //if the current word is well spelled
+                if(typer.value.toLowerCase().trim() == currentWord)
+                {
+                    //clean the typer
+                    typer.value = "";
+                    //get the number of characters in the word entered
+                    var chars = currentWord.length;
+                    //sum them to the cpm variable
+                    cpm += chars;
+                    //update the cpm counter text
+                    cpmCounter.innerHTML = 'CPM: '+cpm;
+                    //set the color of the previous word to green (indicating the good spelling)
+                    previousWordContainer.style.color = "#02C902";
+                }
+                //otherwise (if the word is bad spelled)
+                else
+                {
+                    //count the first well spelled letter only and add them to the counter
+                    
+                    var c,numChars = currentWord.length,typedWord = typer.value.toString();
+                    //loop through all the characters entered
+                    for(c = 0; c < numChars;c++)
+                    {
+                        //if the current character is equal to the respective character on the current word
+                        if(currentWord.charAt(c) == typedWord.charAt(c).toLowerCase())
+                        {
+                            //increment the cpm counter
+                            cpm++;
+                        }
+                        //else(if the current char is not equal to the respective char on the current word)
+                        else
+                            break;
+                    }
+                    //clean the typer
+                    typer.value = "";
+                    //update the cpm counter text
+                    cpmCounter.innerHTML = 'CPM: '+cpm;
+                    //set the color of the previous word to red (indicating the bad spelling)
+                    previousWordContainer.style.color = "#C90202";
+                }
+            //set the text of the previous word to the current word value
+            previousWordContainer.innerHTML = currentWord;
+            //assign to the current word variable the next word value
+            currentWord = nextWord;
+            //assign to the next word variable a random word of this language
+            nextWord = randomWord(lang);
+            //set the text of the current word to the current word value
+            currentWordContainer.innerHTML = currentWord;
+            //set the text of the next word to the next word text
+            nextWordContainer.innerHTML = nextWord;
+            
+            //if isnt started
+            if(!isPlaying)
+            {
+                //create the timer text
+                var timerText = document.createElement("h1");
+                container.appendChild(timerText);
+                timerText.style.color = "#02C902";
+                timerText.style.fontSize = "100%";
+                
+                //create the variable holding the timer value
+                var timerCounter = 60;
+                
+                timerText.innerHTML = 'TIMER: '+timerCounter;
+                
+                //creates timing event that will be fired every second (1000 milliseconds)
+                var time = setInterval(function(){
+                    //decrease the timer value
+                    timerCounter--;
+                    //updates the timer text
+                    timerText.innerHTML = 'TIMER: '+timerCounter;
+                    //if the timer is equals or less than zero
+                    if(timerCounter <= 0)
+                    {
+                        //stop this timing event
+                        clearInterval(time);
+                        
+                        //eliminate the main container of this menu
+                        document.body.removeChild(document.getElementsByTagName("div")[0]);
+                        
+                        //loads the try again menu
+                        tryAgainMenu(cpm,lang);
+                    }
+                },1000);   
+                
+                enterKeyText.innerHTML = 'Enter this word to activate the next';
+                
+                //set the variable (boolean) isPlaying to true
+                isPlaying = true;
+            }
+        }
+    });
+}
+//loads the try again menu given the cpms and the language of the previous game
+function tryAgainMenu(cpm,lang)
+{
+    //if the cpm obtained is higher than the previous record of this language
+    if(cpm > languageRecord(lang))
+        replaceRecord(cpm,lang);
+    
+    //creates the main container of this menu
+    var container = createContainer("0%","0%","100%","100%","typingMenu");
+    document.body.appendChild(container);
+    //aligns all the elements inside this container to the center
+    container.style.textAlign = "center";
+    
+    //shows the cpm scored in the previous game
+    var cpmScored = document.createElement("h1");
+    container.appendChild(cpmScored);
+    cpmScored.style.color = "#02C902";
+    cpmScored.style.fontSize = "100%";
+    cpmScored.innerHTML = 'CPM: '+cpm;
+    
+    //shows the cpm record on the language previously played
+    var cpmLanguageRecord = document.createElement("h1");
+    container.appendChild(cpmLanguageRecord);
+    cpmLanguageRecord.style.color = "#02C902";
+    cpmLanguageRecord.style.fontSize = "100%";
+    cpmLanguageRecord.innerHTML = 'LANGUAGE RECORD: '+ languageRecord(lang)+ ' CPM ('+lang+')';
+    
+    //shows the all time cpm record and the language where it was obtained
+    var cpmBestRecord = document.createElement("h1");
+    container.appendChild(cpmBestRecord);
+    cpmBestRecord.style.color = "#02C902";
+    cpmBestRecord.style.fontSize = "100%";
+    cpmBestRecord.innerHTML = 'CPM RECORD: '+ bestRecord() + ' ('+recordLanguage(bestRecord())+')';
+    
+    //shows a little author text xD
+    var authorText = document.createElement("h1");
+    container.appendChild(authorText);
+    authorText.style.color = "#C9C9C9";
+    authorText.style.fontSize = "80%";
+    if(cpm >= 400)
+        authorText.innerHTML = 'So... You expected something more here...';
+    else if(cpm < 400 && cpm >= 380)
+        authorText.innerHTML = 'Are you an alien? That was truly extraterrestrial!<br/>'+
+                            'I am sure that your alien race has more than two hands to type.<br />'+
+                            'Share in the comments your alien score.';
+    else if(cpm < 380 && cpm >= 350)
+        authorText.innerHTML = 'Do you still have fingers? I am pretty sure that your keyboard is on fire.<br/>'+
+                            'Share in the comments section how many fingers you have left!<br />'+
+                            'P.S. : If you want, you can share your score too...';
+    else if(cpm < 350 && cpm >= 300)
+        authorText.innerHTML = 'I am sure you are in the Guiness now. Congratulations, you are the best!<br/>'+
+                            'Show to the others, on the comments section, your incredible high score.';
+    else if(cpm < 300 && cpm >= 250)
+        authorText.innerHTML = 'That was really awesome ninja, I am sure you can type faster than everyone here.<br/>'+
+                            'Share in the comments section how many characters you can type Ninja!';
+    else if(cpm < 250 && cpm >= 200)
+        authorText.innerHTML = 'That was wonderful, I am sure you have beaten some personal record.<br/>'+
+                            'You really need to share in the comments section how high you scored in this language!';
+    else if(cpm < 200 && cpm >= 180)
+        authorText.innerHTML = 'I am very impressed, you scored way above the average.<br />'+
+                        'Share in the comments section how high you scored in this language!';
+    else if(cpm < 180 && cpm >= 160)
+        authorText.innerHTML = 'Good job you manage to do it above the average.<br />'+
+                        'Share in the comments section how high you scored in this language!';
+    else if(cpm < 160 && cpm >= 140)
+        authorText.innerHTML = 'You type like most of the people. Keep typing.<br />'+
+                        'Share in the comments section how high you scored in this language!';
+    else if(cpm < 140 && cpm >= 100)
+        authorText.innerHTML = 'That seemed a lot of effort. You are below the average person.<br />'+
+                        'Share in the comments section how high you scored in this language!';
+    else if(cpm < 100)
+        authorText.innerHTML = 'That was horrible. Did you sleep during the test?<br />'+
+                        'Share in the comments section if you have the courage, how high you scored in this language!';
+    
+    //creates the try again button
+    var againButton = createButton("auto","44%","28%","10%","TRY AGAIN");
+    container.appendChild(againButton);
+    againButton.style.fontSize = "80%";
+    againButton.addEventListener('click',function(){
+        document.body.removeChild(document.getElementsByTagName("div")[0]);
+        typingMenu();
+    });
+    
+    //creates the return to menu button
+    var menuButton = createButton("2%","44%","28%","10%","MENU");
+    container.appendChild(menuButton);
+    menuButton.style.fontSize = "80%";
+    menuButton.addEventListener('click',function(){
+        document.body.removeChild(document.getElementsByTagName("div")[0]);
+        startMenu();
+    });
+}
+//returns a random word given: language
+function randomWord(language)
+{
+    if(language == "english")
+    {
+        return english_Words[random(0,english_Words.length-1)];
+    }
+    
+}
+//returns a random number between a min and a max inclusive
+function random(min,max)
+{
+    return Math.floor((Math.random()*max)-min)+1;
+}
+//creates the main container for a menu given: x, y, width, height and id
+function createContainer(x,y,width,height,id)
+{
+    //creates a DIV element
+    var div = document.createElement("div");
+    
+    //sets the position of the div
+    div.style.marginLeft = x;
+    div.style.marginRight = "auto";
+    div.style.marginTop = y;
+    div.style.marginBottom = "auto";
+    
+    //set the dimension of the div
+    div.style.width = width;
+    div.style.height = height;
+    
+    //set the id of the div
+    div.setAttribute("id",id);
+    
+    return div;
+}
+//creates a button given: x,y, width,height and text
+function createButton(x,y,width,height,text)
+{
+    //creates a BUTTON element
+    var button = document.createElement("button");
+    
+    //sets the position of the button
+    button.style.marginLeft = x;
+    button.style.marginRight = "auto";
+    button.style.marginTop = y;
+    button.style.marginBottom = "auto";
+    
+    //sets the dimension of the button
+    button.style.width = width;
+    button.style.height = height;
+    
+    //remove the border of the button
+    button.style.border = "0px";
+    //remove the browser outlining
+    button.style.outline = "none";
+    //sets the background color of the button
+    button.style.backgroundColor = "#008600";
+    //sets the color of the text inside the button
+    button.style.color = "#DCDCDC";
+    
+    //sets the text inside the button
+    button.appendChild(document.createTextNode(text));
+    
+     //when the mouse is over the button
+    button.addEventListener('mouseover',function(){
+        //sets a border
+        button.style.border = "5px solid #0000AA";
+    });
+    //when the mouse leaves the button, everything returns to the defaults
+    button.addEventListener('mouseleave',function(){
+        //remove the border of the button
+        button.style.border = "0px";
+    });
+    
+    return button;
+}
+//creates a image given: x,y,width,height,sourceNumber, the menu container
+function createImage(x,y,width,height,sourceNumber,container)
+{
+    //creates a IMG element
+    var image = document.createElement("img");
+    
+    //sets the position of the image
+    image.style.position = "absolute";
+    image.style.left = x;
+    image.style.top = y;
+
+    //sets the dimensions of the image
+    image.setAttribute("width",width);
+    image.setAttribute("height",height);
+    
+    //set the source of the image
+    image.setAttribute("src",flags[sourceNumber]);
+    
+
+    //sets the border of the image
+    image.style.border = "5px solid #26AF26";
+        
+    //on mouse over
+    image.addEventListener('mouseover',function(){
+        //change the border
+        image.style.border = "5px solid #2626AF";
+    });
+    //on mouse leave
+    image.addEventListener('mouseleave',function(){
+        //change the border
+        image.style.border = "5px solid #26AF26";
+    });
+    //on mouse click
+    image.addEventListener('mousedown',function(){
+        //change the language to the language of the flag clicked
+        switch(sourceNumber)
+        {
+            case 0:
+                lang = "english";
+                break;
+           
+               
+                    
+        }
+        //removes this menu
+        document.body.removeChild(container);
+        //loads the typing menu
+        typingMenu();
+    });
+
+    return image;
+}
+//return a record of a given language
+function languageRecord(language)
+{
+    var i, numLanguages = records.length;
+    for(i = 0;i < numLanguages;i++)
+    {
+        if(records[i][0] == language)
+        {
+            return records[i][1];
+        }
+    }
+}
+//return the language pf a given record
+function recordLanguage(record)
+{
+    var i, numLanguages = records.length;
+    for(i = 0;i < numLanguages;i++)
+    {
+        if(records[i][1] == record)
+        {
+            return records[i][0];
+        }
+    }
+}
+//replace the record of a language given: the language and the new record
+function replaceRecord(value,language)
+{
+    var i, numLanguages = records.length;
+    for(i = 0;i < numLanguages;i++)
+    {
+        if(records[i][0] == language)
+        {
+            records[i][1] = value;
+        }
+    }
+}
+//return the maximum cpm obtained ever
+function bestRecord()
+{
+    var i,numLanguages = records.length,max = records[0][1];
+    for(i = 1;i < numLanguages;i++)
+    {
+        if(records[i][1] > max)
+            max = records[i][1];
+    }
+    return max;
+}
+
+
+//contains the sources of the flags images
+var flags = [
+    "https://www.mapsofindia.com/maps/india/india-flag.jpg",
+    
+];
+
+//contais all the english words for the app
+var english_Words = [
+    "the","of","and","to","in","is","you","are","for",
+    "that","or","it","as","be","on","your","with","can","have",
+    "this","an","by","not","but","at","from","they","more","will",
+    "if","some","there","what","about","which","when","one","their","all",
+    "also","how","many","do","has","most","people","other","time","so",
+    "was","we","these","may","like","use","into","than","up","out",
+    "who","them","make","because","such","through","get","work","even","different",
+    "no","our","new","film","just","only","see","used","good",
+    "water","been","need","should","very","any","history","often","way","well",
+    "art","know","were","then","my","first","would","money","each","over",
+    "diligent","eloquent","empathy","erudite","fabricate","forsake","gluttony",
+    "hypocrisy","impeccable","impertinent","implacable","incisive","inept",
+    "infamy","inhibit","innate","insatiable","intrepid","jubilant","maverick",
+    "meticulous","nominal","novice","nuance","oblivious","obtuse","parody",
+    "predilection","repudiate","salient","superfluous","taciturn","venerable",
+    "vociferous","sad","brief","housing","post","purchase","existing","dark","steel",
+    "regarding","shout","remaining","visual","fairly","chip","violent","silent","suppose",
+    "self","bike","tea","perceive","comparison","settlement","layer","planning","far",
+    "description","later","slow","slide","widely","wedding","inform","portion","territory",
+    "immediate","opponent","abandon","link","mass","lake","transform","tension","display",
+    "leading","bother","consist","alcohol","enable","bend","gain","desert","shall","error",
+    "release","double","walk","sand","rule","hit","print","preserve","dictionary",
+    "imagine","stadium","win","lose","science","world","angry","wolf","bird","start",
+    "go","girl","boy","father","mother","child","children","lonely","moon","cat","dog",
+    "president","call","red","blue","yellow","black","white","constant","school",
+    "close","closed","closet","room","green","typing","speed","earth","love",
+    "found","soul","country","sadness","worry","sport","drink","program","programming",
+    "skills","job","college","hope","dead","alive","life","above","average","record",
+    "language","share","comment","section","again","manage","keyboard","chess","play",
+    "game","television","space","galaxy","neutron","subatomic","particle","electron","fiction",
+    "monkey","machine","grass","ball","square","logic","computer","absorb","abstract","accuracy",
+    "acid","entropy","zygote","kinetic","eclipse","twilight","wizard","witch","broom","corn","popcorn",
+    "movie","careful","aberration","abject","abnegation","bashful"
+];
+ </script>
+        
     </body>
 </html>
